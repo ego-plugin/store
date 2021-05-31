@@ -1,4 +1,4 @@
-package dbr
+package edb
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/gocraft/dbr/v2/dialect"
+	"github.com/ego-plugin/store/edb/dialect"
 )
 
 // InsertStmt builds `INSERT INTO ...`.

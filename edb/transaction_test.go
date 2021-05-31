@@ -1,9 +1,9 @@
-package dbr
+package edb
 
 import (
 	"testing"
 
-	"github.com/gocraft/dbr/v2/dialect"
+	"github.com/ego-plugin/store/edb/dialect"
 	"github.com/stretchr/testify/require"
 )
 

@@ -1,4 +1,4 @@
-package dbr
+package edb
 
 import (
 	"database/sql"

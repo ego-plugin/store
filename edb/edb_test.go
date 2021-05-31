@@ -1,4 +1,4 @@
-package dbr
+package edb
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gocraft/dbr/v2/dialect"
+	"github.com/ego-plugin/store/edb/dialect"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/denisenkom/go-mssqldb"

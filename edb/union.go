@@ -1,4 +1,4 @@
-package dbr
+package edb
 
 type union struct {
 	builder []Builder

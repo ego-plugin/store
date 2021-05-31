@@ -1,4 +1,4 @@
-package dbr
+package edb
 
 // I is quoted identifier
 type I string

@@ -1,5 +1,5 @@
 // Package dbr provides additions to Go's database/sql for super fast performance and convenience.
-package dbr
+package edb
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gocraft/dbr/v2/dialect"
+	"github.com/ego-plugin/store/edb/dialect"
 )
 
 // Open creates a Connection.

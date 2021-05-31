@@ -1,11 +1,11 @@
-package dbr
+package edb
 
 import (
 	"context"
 	"database/sql"
 	"strconv"
 
-	"github.com/gocraft/dbr/v2/dialect"
+	"github.com/ego-plugin/store/edb/dialect"
 )
 
 // SelectStmt builds `SELECT ...`.
