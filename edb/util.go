@@ -139,3 +139,14 @@ func (s *tagStore) findValueByName(value reflect.Value, name []string, ret []int
 		}
 	}
 }
+
+// IsSliceContainsString method checks given string in the slice if found returns
+// true otherwise false.
+func IsSliceContainsString(search string, strSlice ...string) bool {
+	for _, str := range strSlice {
+		if strings.EqualFold(str, search) {
+			return true
+		}
+	}
+	return false
+}

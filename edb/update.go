@@ -3,7 +3,9 @@ package edb
 import (
 	"context"
 	"database/sql"
+	"reflect"
 	"strconv"
+	"strings"
 )
 
 // UpdateStmt builds `UPDATE ...`.
@@ -171,6 +173,40 @@ func (b *UpdateStmt) Set(column string, value interface{}) *UpdateStmt {
 func (b *UpdateStmt) SetMap(m map[string]interface{}) *UpdateStmt {
 	for col, val := range m {
 		b.Set(col, val)
+	}
+	return b
+}
+
+// ScanStruct 扫描struct按column绑定值 (传入值, 表列名) tag 绑定db名
+func (b *UpdateStmt) ScanStruct(v interface{}, column ...string) *UpdateStmt {
+	valueType := reflect.TypeOf(v)
+	valueValue := reflect.ValueOf(v)
+	if valueType.Kind() == reflect.Ptr {
+		valueType = valueType.Elem()
+		valueValue = valueValue.Elem()
+	}
+	if valueType.Kind() != reflect.Struct {
+		return b
+	}
+	columnLen := len(column)
+	for i := 0; i < valueType.NumField(); i++ {
+		typeField := valueType.Field(i)  // struct取行类型
+		valueField := valueValue.Field(i) // struct取行值
+		// 取列名
+		columnName := typeField.Tag.Get("db")
+		columnNameList := strings.Split(columnName, ",")
+		columnName = columnNameList[0]
+		// 列名为空转到下一行
+		if columnName == "" || columnName == "-" || columnName == "id" || columnName == "ID" {
+			continue
+		}
+		// 检查列是否存在
+		if columnLen > 0 && !IsSliceContainsString(columnName, column...) {
+			continue
+		}
+		if valueField.CanSet() {
+			b.Set(columnName, valueField.Interface())
+		}
 	}
 	return b
 }

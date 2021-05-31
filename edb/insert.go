@@ -180,6 +180,39 @@ func (b *InsertStmt) Values(value ...interface{}) *InsertStmt {
 	return b
 }
 
+// StructValues  Struct 里 tag 的 db 不等于空的写入 values
+func (b *InsertStmt) ScanStruct(value interface{}, column ...string) *InsertStmt {
+	valueType := reflect.TypeOf(value)
+	valueValue := reflect.ValueOf(value)
+	if valueType.Kind() == reflect.Ptr {
+		valueType = valueType.Elem()
+		valueValue = valueValue.Elem()
+	}
+	if valueType.Kind() != reflect.Struct {
+		return b
+	}
+	columns := make([]string, 0)
+	values := make([]interface{}, 0)
+	columnLen := len(column)
+	for index := 0; index < valueType.NumField(); index++ {
+		typeField := valueType.Field(index)
+		valueField := valueValue.Field(index)
+		columnName := typeField.Tag.Get("db")
+		columnSlice := strings.SplitN(columnName, ",", 2)
+		columnName = columnSlice[0]
+		if columnName == "" || columnName == "id" || columnName == "-" {
+			continue
+		}
+		// 检查列是否存在
+		if columnLen > 0 && !IsSliceContainsString(columnName, column...) {
+			continue
+		}
+		columns = append(columns, columnName)
+		values = append(values, valueField.Interface())
+	}
+	return b.Columns(columns...).Values(values...)
+}
+
 // Record adds a tuple for columns from a struct.
 //
 // If there is a field called "Id" or "ID" in the struct,
