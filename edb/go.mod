@@ -1,4 +1,4 @@
-module github.com/ego-plugin/store
+module github.com/ego-plugin/store/edb
 
 go 1.16
 
