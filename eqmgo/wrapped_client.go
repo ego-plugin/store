@@ -12,7 +12,7 @@ type Client struct {
 	logMode   bool
 }
 
-func NewClient(ctx context.Context,conf *qmgo.Config, opts ...options.ClientOptions) (*Client, error) {
+func NewClient(ctx context.Context, conf *qmgo.Config, opts ...options.ClientOptions) (*Client, error) {
 	var client *qmgo.Client
 	var err error
 	client, err = qmgo.NewClient(ctx, conf, opts...)
@@ -49,14 +49,14 @@ func (ec *Client) Database(name string) *Database {
 	return &Database{db: db, processor: ec.processor, logMode: ec.logMode}
 }
 
-func (ec *Client) Session(opt ...*options.SessionOptions) (s *Session, err error)  {
+func (ec *Client) Session(opt ...*options.SessionOptions) (s *Session, err error) {
 	var sess *qmgo.Session
 	_ = ec.processor(func(c *cmd) error {
 		sess, err = ec.cc.Session(opt...)
 		logCmd(ec.logMode, c, "Session", nil)
 		return err
 	})
-	return &Session{Session:sess,processor: ec.processor,logMode: ec.logMode}, err
+	return &Session{Session: sess, processor: ec.processor, logMode: ec.logMode}, err
 }
 
 func (ec *Client) Close(ctx context.Context) error {
@@ -73,7 +73,7 @@ func (ec *Client) Ping(timeout int64) error {
 	})
 }
 
-func (ec *Client) DoTransaction(ctx context.Context, callback func(sessCtx context.Context) (interface{}, error), opts ...*options.TransactionOptions) (x interface{},err error) {
+func (ec *Client) DoTransaction(ctx context.Context, callback func(sessCtx context.Context) (interface{}, error), opts ...*options.TransactionOptions) (x interface{}, err error) {
 	return ec.cc.DoTransaction(ctx, callback, opts...)
 }
 

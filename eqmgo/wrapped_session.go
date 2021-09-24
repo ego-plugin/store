@@ -13,14 +13,12 @@ type Session struct {
 	logMode   bool
 }
 
-func (ws *Session) StartTransaction(ctx context.Context, cb func(sessCtx context.Context) (interface{}, error), opts ...*opts.TransactionOptions) (interface{}, error) {
-	result, err := ws.Session.StartTransaction(ctx,cb)
-	if err != nil {
-		return result, ws.processor(func(c *cmd) error {
-			logCmd(ws.logMode, c, "StartTransaction", nil)
-			return err
-		})
-	}
+func (ws *Session) StartTransaction(ctx context.Context, cb func(sessCtx context.Context) (interface{}, error), opts ...*opts.TransactionOptions) (result interface{}, err error) {
+	_ = ws.processor(func(c *cmd) error {
+		result, err = ws.Session.StartTransaction(ctx,cb)
+		logCmd(ws.logMode, c, "StartTransaction", nil)
+		return err
+	})
 	return result, err
 }
 
@@ -31,7 +29,6 @@ func (ws *Session) EndSession(ctx context.Context) {
 		logCmd(ws.logMode, c,"EndSession", nil)
 		return nil
 	})
-	ws.Session.EndSession(ctx)
 }
 
 // AbortTransaction aborts the active transaction for this session. This method will return an error if there is no
