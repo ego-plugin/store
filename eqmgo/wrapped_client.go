@@ -9,6 +9,7 @@ import (
 type Client struct {
 	cc        *qmgo.Client
 	processor processor
+	database  string
 	logMode   bool
 }
 
@@ -19,7 +20,7 @@ func NewClient(ctx context.Context, conf *qmgo.Config, opts ...options.ClientOpt
 	if err != nil {
 		return nil, err
 	}
-	return &Client{cc: client, processor: defaultProcessor}, nil
+	return &Client{cc: client, processor: defaultProcessor, database: conf.Database}, nil
 }
 
 func (ec *Client) setLogMode(logMode bool) {
@@ -40,7 +41,20 @@ func (ec *Client) Database(name string) *Database {
 	var db *qmgo.Database
 	_ = ec.processor(func(c *cmd) error {
 		db = ec.cc.Database(name)
-		logCmd(ec.logMode, c, "Connect", db, name)
+		logCmd(ec.logMode, c, "Database", db, name)
+		return nil
+	})
+	if db == nil {
+		return nil
+	}
+	return &Database{db: db, processor: ec.processor, logMode: ec.logMode}
+}
+
+func (ec *Client) DefaultDatabase() *Database {
+	var db *qmgo.Database
+	_ = ec.processor(func(c *cmd) error {
+		db = ec.cc.Database(ec.database)
+		logCmd(ec.logMode, c, "DefaultDatabase", db, ec.database)
 		return nil
 	})
 	if db == nil {

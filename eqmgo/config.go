@@ -1,4 +1,5 @@
 package eqmgo
+
 import (
 	"time"
 
@@ -10,6 +11,8 @@ type config struct {
 	DSN string `json:"dsn" toml:"dsn"`
 	// Debug 是否开启debug模式
 	Debug bool `json:"debug" toml:"debug"`
+	// DefaultDatabase 默认数据库
+	DefaultDatabase string `json:"defaultDatabase" toml:"defaultDatabase"`
 	// SocketTimeout 创建连接的超时时间
 	SocketTimeout time.Duration `json:"socketTimeout" toml:"socketTimeout"`
 	// PoolLimit 连接池大小(最大连接数)
@@ -25,7 +28,7 @@ type config struct {
 	// SlowLogThreshold 慢日志门限值，超过该门限值的请求，将被记录到慢日志中
 	SlowLogThreshold time.Duration
 	// interceptors 拦截器
-	interceptors     []Interceptor
+	interceptors []Interceptor
 }
 
 // DefaultConfig 返回默认配置

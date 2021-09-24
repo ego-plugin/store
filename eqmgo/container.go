@@ -52,7 +52,7 @@ func (c *Container) newSession(config config) *Client {
 	clientOpts := new(options.ClientOptions)
 	clientOpts.MaxPoolSize = &mps
 	clientOpts.SocketTimeout = &config.SocketTimeout // 创建连接的超时时间
-	client, err := NewClient(context.Background(),&qmgo.Config{Uri: config.DSN}, *clientOpts)
+	client, err := NewClient(context.Background(), &qmgo.Config{Uri: config.DSN, Database: config.DefaultDatabase}, *clientOpts)
 	if err != nil {
 		c.logger.Panic("dial mongo", elog.FieldAddr(config.DSN), elog.Any("error", err))
 	}
