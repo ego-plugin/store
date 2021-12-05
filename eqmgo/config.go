@@ -16,7 +16,7 @@ type config struct {
 	// SocketTimeout 创建连接的超时时间
 	SocketTimeout time.Duration `json:"socketTimeout" toml:"socketTimeout"`
 	// PoolLimit 连接池大小(最大连接数)
-	PoolLimit int `json:"poolLimit" toml:"poolLimit"`
+	PoolLimit uint64 `json:"poolLimit" toml:"poolLimit"`
 	// EnableMetricInterceptor 是否启用prometheus metric拦截器
 	EnableMetricInterceptor bool `json:"enableMetricInterceptor" toml:"enableMetricInterceptor"`
 	// EnableAccessInterceptorReq 是否启用access req拦截器，此配置只有在EnableAccessInterceptor=true时才会生效

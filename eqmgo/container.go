@@ -47,10 +47,8 @@ func (c *Container) newSession(config config) *Client {
 	// 判断配置错误
 	c.isConfigErr(config)
 	// 连接池大小(最大连接数)
-	mps := uint64(config.PoolLimit)
-
 	clientOpts := new(options.ClientOptions)
-	clientOpts.MaxPoolSize = &mps
+	clientOpts.MaxPoolSize = &config.PoolLimit
 	clientOpts.SocketTimeout = &config.SocketTimeout // 创建连接的超时时间
 	client, err := NewClient(context.Background(), &qmgo.Config{Uri: config.DSN, Database: config.DefaultDatabase}, *clientOpts)
 	if err != nil {
