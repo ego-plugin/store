@@ -2,8 +2,6 @@ package eqmgo
 
 import (
 	"time"
-
-	"github.com/gotomicro/ego/core/util/xtime"
 )
 
 type config struct {
@@ -13,10 +11,22 @@ type config struct {
 	Debug bool `json:"debug" toml:"debug"`
 	// DefaultDatabase 默认数据库
 	DefaultDatabase string `json:"defaultDatabase" toml:"defaultDatabase"`
-	// SocketTimeout 创建连接的超时时间
-	SocketTimeout time.Duration `json:"socketTimeout" toml:"socketTimeout"`
-	// PoolLimit 连接池大小(最大连接数)
-	PoolLimit uint64 `json:"poolLimit" toml:"poolLimit"`
+	// ConnectTimeoutMS specifies a timeout that is used for creating connections to the server.
+	//	If set to 0, no timeout will be used.
+	//	The default is 30 seconds.
+	ConnectTimeoutMS int64 `json:"connectTimeoutMS" toml:"connectTimeoutMS"`
+	// MaxPoolSize specifies that maximum number of connections allowed in the driver's connection pool to each server.
+	// If this is 0, it will be set to math.MaxInt64,
+	// The default is 100.
+	MaxPoolSize uint64 `json:"maxPoolSize" toml:"maxPoolSize"`
+	// MinPoolSize specifies the minimum number of connections allowed in the driver's connection pool to each server. If
+	// this is non-zero, each server's pool will be maintained in the background to ensure that the size does not fall below
+	// the minimum. This can also be set through the "minPoolSize" URI option (e.g. "minPoolSize=100"). The default is 0.
+	MinPoolSize uint64 `json:"minPoolSize" toml:"minPoolSize"`
+	// SocketTimeoutMS specifies how long the driver will wait for a socket read or write to return before returning a
+	// network error. If this is 0 meaning no timeout is used and socket operations can block indefinitely.
+	// The default is 300,000 ms.
+	SocketTimeoutMS int64 `json:"socketTimeoutMS" toml:"socketTimeoutMS"`
 	// EnableMetricInterceptor 是否启用prometheus metric拦截器
 	EnableMetricInterceptor bool `json:"enableMetricInterceptor" toml:"enableMetricInterceptor"`
 	// EnableAccessInterceptorReq 是否启用access req拦截器，此配置只有在EnableAccessInterceptor=true时才会生效
@@ -33,10 +43,11 @@ type config struct {
 
 // DefaultConfig 返回默认配置
 func DefaultConfig() *config {
-	return &config{
-		DSN:           "",
-		Debug:         true,
-		SocketTimeout: xtime.Duration("300s"),
-		PoolLimit:     100,
-	}
+	c := new(config)
+	c.DSN = "mongodb://root:example@127.0.0.1:27017"
+	c.ConnectTimeoutMS = 30
+	c.MaxPoolSize = 100
+	c.MinPoolSize = 0
+	c.SocketTimeoutMS = 30000
+	return c
 }

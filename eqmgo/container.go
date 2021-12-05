@@ -3,13 +3,10 @@ package eqmgo
 import (
 	"context"
 	"fmt"
-	"sync"
-	"time"
-
 	"github.com/gotomicro/ego/core/econf"
 	"github.com/gotomicro/ego/core/elog"
 	"github.com/qiniu/qmgo"
-	"github.com/qiniu/qmgo/options"
+	"sync"
 )
 
 // Option 选项
@@ -43,22 +40,26 @@ func Load(key string) *Container {
 	return c
 }
 
-func (c *Container) newSession(config config) *Client {
+func (c *Container) newSession(conf config) *Client {
 	// 判断配置错误
-	c.isConfigErr(config)
-	// 连接池大小(最大连接数)
-	clientOpts := new(options.ClientOptions)
-	clientOpts.MaxPoolSize = &config.PoolLimit
-	clientOpts.SocketTimeout = &config.SocketTimeout // 创建连接的超时时间
-	client, err := NewClient(context.Background(), &qmgo.Config{Uri: config.DSN, Database: config.DefaultDatabase}, *clientOpts)
+	c.isConfigErr(conf)
+
+	client, err := NewClient(context.Background(), &qmgo.Config{
+		Uri:              conf.DSN,
+		Database:         conf.DefaultDatabase,
+		MaxPoolSize:      &conf.MaxPoolSize,
+		MinPoolSize:      &conf.MinPoolSize,
+		ConnectTimeoutMS: &conf.ConnectTimeoutMS,
+		SocketTimeoutMS:  &conf.SocketTimeoutMS,
+	})
 	if err != nil {
-		c.logger.Panic("dial mongo", elog.FieldAddr(config.DSN), elog.Any("error", err))
+		c.logger.Panic("dial mongo", elog.FieldAddr(conf.DSN), elog.Any("error", err))
 	}
 	if c.config.Debug {
 		client.logMode = true
 	}
 	instances.Store(c.name, client)
-	client.wrapProcessor(InterceptorChain(config.interceptors...))
+	client.wrapProcessor(InterceptorChain(conf.interceptors...))
 	return client
 }
 
@@ -79,11 +80,8 @@ func get(name string) *Client {
 
 // isConfigErr 判断配置错误
 func (c *Container) isConfigErr(config config) {
-	if config.SocketTimeout == time.Duration(0) {
-		c.logger.Panic("invalid config", elog.FieldExtMessage("socketTimeout"))
-	}
-	if config.PoolLimit == 0 {
-		c.logger.Panic("invalid config", elog.FieldExtMessage("poolLimit"))
+	if config.SocketTimeoutMS < 1 {
+		c.logger.Panic("invalid config", elog.FieldExtMessage("SocketTimeoutMS"))
 	}
 }
 
