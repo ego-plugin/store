@@ -5,7 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func ScanToM(v struct{}) (m bson.M) {
+func ScanToM(v interface{}) (m bson.M) {
 	s := structs.New(v)
 	s.TagName = "bson"
 	m = s.Map()
