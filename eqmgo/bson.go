@@ -1,7 +1,7 @@
 package eqmgo
 
 import (
-	"github.com/fatih/structs"
+	"github.com/ego-plugin/structs"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
